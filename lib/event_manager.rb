@@ -1,7 +1,7 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
-
+require 'time'
 
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, '0')[0..4]
@@ -54,6 +54,7 @@ contents = CSV.open(
 
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
+hours = []
 
 contents.each do |row|
   id = row[0]
@@ -69,4 +70,9 @@ contents.each do |row|
 
   save_thank_you_letter(id, form_letter)
 
+  hours << registration_hour = Time.strptime(row[1], "%m/%d/%y %k:%M").hour
+
 end
+
+# Find out which hours of the day the most people registered 
+puts hours.tally.each { |k,v| puts "#{v} people has registered at #{k} o'clock."}
